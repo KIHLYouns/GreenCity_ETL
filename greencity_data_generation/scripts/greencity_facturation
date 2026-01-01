@@ -1,0 +1,169 @@
+-- ============================================
+-- BASE DE DONNÉES OPÉRATIONNELLE - GREENCITY
+-- Système de Facturation
+-- ============================================
+
+-- Création de la base de données
+DROP DATABASE IF EXISTS greencity_facturation;
+CREATE DATABASE greencity_facturation CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE greencity_facturation;
+
+-- ============================================
+-- TABLE: REGIONS
+-- ============================================
+CREATE TABLE regions (
+    id_region VARCHAR(10) PRIMARY KEY,
+    nom_region VARCHAR(100) NOT NULL,
+    pays VARCHAR(50) NOT NULL,
+    ville VARCHAR(100) NOT NULL,
+    code_postal VARCHAR(10),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- ============================================
+-- TABLE: TYPES_ENERGIE
+-- ============================================
+CREATE TABLE types_energie (
+    id_type_energie INT AUTO_INCREMENT PRIMARY KEY,
+    libelle VARCHAR(50) NOT NULL,
+    unite VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- ============================================
+-- TABLE: BATIMENTS
+-- ============================================
+CREATE TABLE batiments (
+    id_batiment VARCHAR(10) PRIMARY KEY,
+    id_region VARCHAR(10) NOT NULL,
+    nom_batiment VARCHAR(150) NOT NULL,
+    adresse VARCHAR(255),
+    surface_m2 DECIMAL(10, 2),
+    type_batiment ENUM('Résidentiel', 'Commercial', 'Industriel', 'Mixte') DEFAULT 'Commercial',
+    nb_etages INT,
+    annee_construction YEAR,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_region) REFERENCES regions(id_region)
+);
+
+-- ============================================
+-- TABLE: COMPTEURS
+-- ============================================
+CREATE TABLE compteurs (
+    id_compteur VARCHAR(20) PRIMARY KEY,
+    id_batiment VARCHAR(10) NOT NULL,
+    id_type_energie INT NOT NULL,
+    date_installation DATE,
+    statut ENUM('Actif', 'Inactif', 'Maintenance') DEFAULT 'Actif',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_batiment) REFERENCES batiments(id_batiment),
+    FOREIGN KEY (id_type_energie) REFERENCES types_energie(id_type_energie)
+);
+
+-- ============================================
+-- TABLE: CLIENTS
+-- ============================================
+CREATE TABLE clients (
+    id_client VARCHAR(10) PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100),
+    email VARCHAR(150),
+    telephone VARCHAR(20),
+    type_client ENUM('Particulier', 'Entreprise') DEFAULT 'Particulier',
+    adresse VARCHAR(255),
+     id_region VARCHAR(10) NOT NULL,
+    date_inscription DATE,
+    statut ENUM('Actif', 'Inactif') DEFAULT 'Actif',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE      CURRENT_TIMESTAMP,
+   FOREIGN KEY (id_region) REFERENCES regions(id_region)
+);
+
+
+
+-- ============================================
+-- TABLE: CONTRATS
+-- ============================================
+CREATE TABLE contrats (
+    id_contrat VARCHAR(15) PRIMARY KEY,
+    id_client VARCHAR(10) NOT NULL,
+    id_compteur VARCHAR(20) NOT NULL,
+    date_debut DATE NOT NULL,
+    date_fin DATE,
+    statut ENUM('Actif', 'Terminé', 'Suspendu', 'Résilié') DEFAULT 'Actif',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE       CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_client) REFERENCES clients(id_client),
+     FOREIGN KEY (id_compteur) REFERENCES compteurs(id_compteur)
+);
+
+-- ============================================
+-- TABLE: FACTURES
+-- ============================================
+CREATE TABLE factures (
+    id_facture VARCHAR(20) PRIMARY KEY,
+    id_contrat VARCHAR(15) NOT NULL,
+    date_emission DATE NOT NULL,
+    date_echeance DATE NOT NULL,
+    periode_debut DATE,
+    periode_fin DATE,
+    montant_ht DECIMAL(12, 2) NOT NULL,
+    tva DECIMAL(5, 2) DEFAULT 20.00,
+    montant_ttc DECIMAL(12, 2) NOT NULL,
+    cout_energie DECIMAL(12, 2),
+    consommation DECIMAL(12, 2),
+    statut_paiement ENUM('Payée', 'En attente', 'En retard', 'Partiel') DEFAULT 'En attente',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_contrat) REFERENCES contrats(id_contrat)
+);
+
+-- ============================================
+-- TABLE: PAIEMENTS
+-- ============================================
+CREATE TABLE paiements (
+    id_paiement VARCHAR(20) PRIMARY KEY,
+    id_facture VARCHAR(20) NOT NULL,
+    date_paiement DATE NOT NULL,
+    montant DECIMAL(12, 2) NOT NULL,
+    mode_paiement ENUM('Virement', 'Carte bancaire', 'Prélèvement', 'Chèque', 'Espèces') DEFAULT 'Virement',
+    reference_transaction VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_facture) REFERENCES factures(id_facture)
+);
+
+-- ============================================
+-- TABLE: TARIFS (Historique des prix)
+-- ============================================
+CREATE TABLE tarifs (
+    id_tarif INT AUTO_INCREMENT PRIMARY KEY,
+    id_type_energie INT NOT NULL,
+    cout_achat_unitaire DECIMAL(10, 4) NOT NULL,
+    prix_vente_unitaire DECIMAL(10, 4) NOT NULL,
+    date_debut DATE NOT NULL,
+    date_fin DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_type_energie) REFERENCES types_energie(id_type_energie)
+);
+
+-- ============================================
+-- TABLE: TEMPERATURES (pour corrélation)
+-- ============================================
+CREATE TABLE temperatures (
+    id_temperature INT AUTO_INCREMENT PRIMARY KEY,
+    id_region VARCHAR(10) NOT NULL,
+    date_mesure DATE NOT NULL,
+    temperature_min DECIMAL(5, 2),
+    temperature_max DECIMAL(5, 2),
+    temperature_moyenne DECIMAL(5, 2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_region) REFERENCES regions(id_region)
+);
+-- ============================================
