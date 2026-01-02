@@ -75,12 +75,11 @@ class JSONConsommationGenerator:
         }
         
         config_type = type_map[type_energie]
-        data = {}
+        data = []
         
         # Grouper par région
         for region in self.regions:
             region_id = region['id_region']
-            region_data = []
             
             # Trouver les bâtiments de cette région
             batiments_region = [b for b in self.batiments if b['id_region'] == region_id]
@@ -95,6 +94,7 @@ class JSONConsommationGenerator:
                 
                 if compteurs_batiment:
                     batiment_data = {
+                        'id_region': region_id,
                         'id_batiment': batiment['id_batiment'],
                         'type_energie': type_energie,
                         'unite': config_type['unite'],
@@ -110,10 +110,7 @@ class JSONConsommationGenerator:
                         )
                         batiment_data['mesures'].extend(mesures)
                     
-                    region_data.append(batiment_data)
-            
-            if region_data:
-                data[region_id] = region_data
+                    data.append(batiment_data)
         
         # Écrire le fichier JSON
         mois_str = date.strftime('%m_%Y')

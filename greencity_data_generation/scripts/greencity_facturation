@@ -1,3 +1,4 @@
+-- Active: 1758915972697@@127.0.0.1@3306@greencity_facturation
 -- ============================================
 -- BASE DE DONNÉES OPÉRATIONNELLE - GREENCITY
 -- Système de Facturation
@@ -158,7 +159,7 @@ CREATE TABLE tarifs (
 CREATE TABLE temperatures (
     id_temperature INT AUTO_INCREMENT PRIMARY KEY,
     id_region VARCHAR(10) NOT NULL,
-    date_mesure DATE NOT NULL,
+    date_mesure VARCHAR(20) NOT NULL,
     temperature_min DECIMAL(5, 2),
     temperature_max DECIMAL(5, 2),
     temperature_moyenne DECIMAL(5, 2),
