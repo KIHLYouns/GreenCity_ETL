@@ -1,0 +1,159 @@
+2026-01-05 02:59:29.000 - Kitchen - Logging is at level : Basic
+2026-01-05 02:59:29.085 - Kitchen - Start of run.
+2026-01-05 02:59:37.347 - job_etl_dm1_consommation - Start of job execution
+2026-01-05 02:59:37.839 - job_etl_dm1_consommation - Starting entry [Extract Regions]
+2026-01-05 02:59:38.401 - Extract Regions - Using run configuration [Pentaho local]
+2026-01-05 02:59:38.466 - Carte - Installing timer to purge stale objects after 1440 minutes.
+2026-01-05 02:59:38.472 - tr_extract_regions - Dispatching started for transformation [tr_extract_regions]
+2026-01-05 02:59:41.001 - Input - Regions.0 - Finished reading query, closing connection
+2026-01-05 02:59:41.020 - Input - Regions.0 - Finished processing (I=8, O=0, R=0, W=8, U=0, E=0)
+2026-01-05 02:59:41.020 - Output - Regions CSV.0 - Finished processing (I=0, O=9, R=8, W=8, U=0, E=0)
+2026-01-05 02:59:41.040 - job_etl_dm1_consommation - Starting entry [Extract Batiments]
+2026-01-05 02:59:41.113 - Extract Batiments - Using run configuration [Pentaho local]
+2026-01-05 02:59:41.118 - tr_extract_batiments - Dispatching started for transformation [tr_extract_batiments]
+2026-01-05 02:59:41.341 - Input - Batiments.0 - Finished reading query, closing connection
+2026-01-05 02:59:41.350 - Input - Batiments.0 - Finished processing (I=50, O=0, R=0, W=50, U=0, E=0)
+2026-01-05 02:59:41.437 - Output - Batiments CSV.0 - Finished processing (I=0, O=51, R=50, W=50, U=0, E=0)
+2026-01-05 02:59:41.451 - job_etl_dm1_consommation - Starting entry [Extract Compteurs]
+2026-01-05 02:59:41.529 - Extract Compteurs - Using run configuration [Pentaho local]
+2026-01-05 02:59:41.534 - tr_extract_compteurs - Dispatching started for transformation [tr_extract_compteurs]
+2026-01-05 02:59:41.788 - Input - Compteurs.0 - Finished reading query, closing connection
+2026-01-05 02:59:41.807 - Input - Compteurs.0 - Finished processing (I=150, O=0, R=0, W=150, U=0, E=0)
+2026-01-05 02:59:41.876 - Output - Compteurs CSV.0 - Finished processing (I=0, O=151, R=150, W=150, U=0, E=0)
+2026-01-05 02:59:41.893 - job_etl_dm1_consommation - Starting entry [Extract Types Energie]
+2026-01-05 02:59:41.959 - Extract Types Energie - Using run configuration [Pentaho local]
+2026-01-05 02:59:41.968 - tr_extract_types_energie - Dispatching started for transformation [tr_extract_types_energie]
+2026-01-05 02:59:42.091 - Input - Types Energie.0 - Finished reading query, closing connection
+2026-01-05 02:59:42.101 - Output - Types Energie CSV.0 - Finished processing (I=0, O=4, R=3, W=3, U=0, E=0)
+2026-01-05 02:59:42.112 - Input - Types Energie.0 - Finished processing (I=3, O=0, R=0, W=3, U=0, E=0)
+2026-01-05 02:59:42.122 - job_etl_dm1_consommation - Starting entry [Extract Temperatures]
+2026-01-05 02:59:42.200 - Extract Temperatures - Using run configuration [Pentaho local]
+2026-01-05 02:59:42.207 - tr_extract_temperatures - Dispatching started for transformation [tr_extract_temperatures]
+2026-01-05 02:59:42.405 - Input - Temperatures.0 - Finished reading query, closing connection
+2026-01-05 02:59:42.450 - Input - Temperatures.0 - Finished processing (I=58, O=0, R=0, W=58, U=0, E=0)
+2026-01-05 02:59:42.539 - Output - Temperatures CSV.0 - Finished processing (I=0, O=59, R=58, W=58, U=0, E=0)
+2026-01-05 02:59:42.556 - job_etl_dm1_consommation - Starting entry [Extract JSON Conso]
+2026-01-05 02:59:42.789 - Extract JSON Conso - Using run configuration [Pentaho local]
+2026-01-05 02:59:42.794 - tr_extract_json_consommation - Dispatching started for transformation [tr_extract_json_consommation]
+2026-01-05 02:59:43.009 - Lecture - Fichiers Source.0 - Finished processing (I=0, O=0, R=0, W=3, U=0, E=0)
+2026-01-05 02:59:43.768 - Extraction - Bâtiments .0 - Finished processing (I=150, O=0, R=3, W=150, U=0, E=0)
+2026-01-05 02:59:44.091 - Extraction - Mesures.0 - Finished processing (I=3607, O=0, R=150, W=3607, U=0, E=0)
+2026-01-05 02:59:44.104 - Transformation - Unification Conso.0 - Finished processing (I=0, O=0, R=3607, W=3607, U=0, E=0)
+2026-01-05 02:59:44.112 - Formatage - Date & Heure.0 - Finished processing (I=0, O=0, R=3607, W=3607, U=0, E=0)
+2026-01-05 02:59:44.124 - Enrichissement - Source.0 - Finished processing (I=0, O=0, R=3607, W=3607, U=0, E=0)
+2026-01-05 02:59:44.134 - Nettoyage - Selection Finale.0 - Finished processing (I=0, O=0, R=3607, W=3607, U=0, E=0)
+2026-01-05 02:59:44.145 - Sortie - Fichier CSV.0 - Finished processing (I=0, O=3608, R=3607, W=3607, U=0, E=0)
+2026-01-05 02:59:44.164 - job_etl_dm1_consommation - Starting entry [Clean Regions]
+2026-01-05 02:59:44.337 - Clean Regions - Using run configuration [Pentaho local]
+2026-01-05 02:59:44.341 - tr_clean_regions - Dispatching started for transformation [tr_clean_regions]
+2026-01-05 02:59:44.499 - Lecture - stg_regions.0 - Header row skipped in file 'C:\GreenCity_BI\staging\extracted\stg_regions .csv'
+2026-01-05 02:59:44.506 - Lecture - stg_regions.0 - Finished processing (I=9, O=0, R=0, W=8, U=0, E=0)
+2026-01-05 02:59:44.511 - Nettoyage - Trim.0 - Finished processing (I=0, O=0, R=8, W=8, U=0, E=0)
+2026-01-05 02:59:44.516 - Gestion NULLs.0 - Finished processing (I=0, O=0, R=8, W=8, U=0, E=0)
+2026-01-05 02:59:44.526 - Dédoublonnage.0 - Finished processing (I=0, O=0, R=8, W=8, U=0, E=0)
+2026-01-05 02:59:44.533 - Sortie - clean_regions.0 - Finished processing (I=0, O=9, R=8, W=8, U=0, E=0)
+2026-01-05 02:59:44.549 - job_etl_dm1_consommation - Starting entry [Clean Batiments]
+2026-01-05 02:59:44.668 - Clean Batiments - Using run configuration [Pentaho local]
+2026-01-05 02:59:44.676 - tr_clean_batiments - Dispatching started for transformation [tr_clean_batiments]
+2026-01-05 02:59:44.802 - Lecture - Batiments.0 - Header row skipped in file 'C:\GreenCity_BI\staging\extracted\stg_batiments.csv'
+2026-01-05 02:59:44.837 - Lecture - Batiments.0 - Finished processing (I=51, O=0, R=0, W=50, U=0, E=0)
+2026-01-05 02:59:44.849 - Nettoyage - Trim.0 - Finished processing (I=0, O=0, R=50, W=50, U=0, E=0)
+2026-01-05 02:59:44.854 - Correction - Surface Abs.0 - Finished processing (I=0, O=0, R=50, W=50, U=0, E=0)
+2026-01-05 02:59:44.868 - Gestion NULLs.0 - Finished processing (I=0, O=0, R=50, W=50, U=0, E=0)
+2026-01-05 02:59:44.879 - Selection - Surface Corrigée.0 - Finished processing (I=0, O=0, R=50, W=50, U=0, E=0)
+2026-01-05 02:59:44.884 - Nettoyage - Format Année.0 - Finished processing (I=0, O=0, R=50, W=50, U=0, E=0)
+2026-01-05 02:59:44.888 - Dédoublonnage.0 - Finished processing (I=0, O=0, R=50, W=50, U=0, E=0)
+2026-01-05 02:59:44.893 - Sortie - clean_batiments.0 - Finished processing (I=0, O=51, R=50, W=50, U=0, E=0)
+2026-01-05 02:59:44.899 - job_etl_dm1_consommation - Starting entry [Clean Compteurs]
+2026-01-05 02:59:44.981 - Clean Compteurs - Using run configuration [Pentaho local]
+2026-01-05 02:59:44.985 - tr_clean_compteurs - Dispatching started for transformation [tr_clean_compteurs]
+2026-01-05 02:59:45.079 - Lecture - Compteurs.0 - Header row skipped in file 'C:\GreenCity_BI\staging\extracted\stg_compteurs.csv'
+2026-01-05 02:59:45.107 - Lecture - Compteurs.0 - Finished processing (I=151, O=0, R=0, W=150, U=0, E=0)
+2026-01-05 02:59:45.127 - Formatage - Casse.0 - Finished processing (I=0, O=0, R=150, W=150, U=0, E=0)
+2026-01-05 02:59:45.132 - Nettoyage - Coupe Heure.0 - Finished processing (I=0, O=0, R=150, W=150, U=0, E=0)
+2026-01-05 02:59:45.143 - Nettoyage - Remplace Slash.0 - Finished processing (I=0, O=0, R=150, W=150, U=0, E=0)
+2026-01-05 02:59:45.157 - Typage - Date.0 - Finished processing (I=0, O=0, R=150, W=150, U=0, E=0)
+2026-01-05 02:59:45.168 - Tri - ID Compteur.0 - Finished processing (I=0, O=0, R=150, W=150, U=0, E=0)
+2026-01-05 02:59:45.174 - Dédoublonnage.0 - Finished processing (I=0, O=0, R=150, W=150, U=0, E=0)
+2026-01-05 02:59:45.187 - Sortie - clean_compteurs.0 - Finished processing (I=0, O=151, R=150, W=150, U=0, E=0)
+2026-01-05 02:59:45.197 - job_etl_dm1_consommation - Starting entry [Clean Types Energie]
+2026-01-05 02:59:45.261 - Clean Types Energie - Using run configuration [Pentaho local]
+2026-01-05 02:59:45.265 - tr_clean_types_energie - Dispatching started for transformation [tr_clean_types_energie]
+2026-01-05 02:59:45.291 - Lecture - Types Energie.0 - Header row skipped in file 'C:\GreenCity_BI\staging\extracted\stg_types_energie.csv'
+2026-01-05 02:59:45.297 - Lecture - Types Energie.0 - Finished processing (I=4, O=0, R=0, W=3, U=0, E=0)
+2026-01-05 02:59:45.300 - Nettoyage - Trim.0 - Finished processing (I=0, O=0, R=3, W=3, U=0, E=0)
+2026-01-05 02:59:45.306 - Sortie - clean_types_energie.0 - Finished processing (I=0, O=4, R=3, W=3, U=0, E=0)
+2026-01-05 02:59:45.319 - job_etl_dm1_consommation - Starting entry [Clean Temperatures]
+2026-01-05 02:59:45.409 - Clean Temperatures - Using run configuration [Pentaho local]
+2026-01-05 02:59:45.412 - tr_clean_temperatures - Dispatching started for transformation [tr_clean_temperatures]
+2026-01-05 02:59:45.465 - Lecture - Temperatures.0 - Header row skipped in file 'C:\GreenCity_BI\staging\extracted\stg_temperatures.csv'
+2026-01-05 02:59:45.472 - Lecture - Temperatures.0 - Finished processing (I=59, O=0, R=0, W=58, U=0, E=0)
+2026-01-05 02:59:45.479 - Nettoyage - Trim ID.0 - Finished processing (I=0, O=0, R=58, W=58, U=0, E=0)
+2026-01-05 02:59:45.488 - Nettoyage - Coupe Heure.0 - Finished processing (I=0, O=0, R=58, W=58, U=0, E=0)
+2026-01-05 02:59:45.493 - Nettoyage - Remplace Slash.0 - Finished processing (I=0, O=0, R=58, W=58, U=0, E=0)
+2026-01-05 02:59:45.507 - Definir Precision.0 - Finished processing (I=0, O=0, R=58, W=58, U=0, E=0)2026-01-05 02:59:45.503 - Conversion - Date.0 - Finished processing (I=0, O=0, R=58, W=58, U=0, E=0)
+
+2026-01-05 02:59:45.514 - Calcul - Arrondi.0 - Finished processing (I=0, O=0, R=58, W=58, U=0, E=0)
+2026-01-05 02:59:45.521 - Tri - Region Date.0 - Finished processing (I=0, O=0, R=58, W=58, U=0, E=0)
+2026-01-05 02:59:45.526 - Dédoublonnage.0 - Finished processing (I=0, O=0, R=58, W=57, U=0, E=0)
+2026-01-05 02:59:45.546 - Sortie - clean_temperatures.0 - Finished processing (I=0, O=58, R=57, W=57, U=0, E=0)
+2026-01-05 02:59:45.560 - job_etl_dm1_consommation - Starting entry [Clean Consommation]
+2026-01-05 02:59:45.654 - Clean Consommation - Using run configuration [Pentaho local]
+2026-01-05 02:59:45.659 - tr_clean_consommation - Dispatching started for transformation [tr_clean_consommation]
+2026-01-05 02:59:45.788 - Lecture - Consommation.0 - Header row skipped in file 'C:\GreenCity_BI\staging\extracted\stg_consommation_json.csv'
+2026-01-05 02:59:46.511 - Lecture - Consommation.0 - Finished processing (I=3608, O=0, R=0, W=3607, U=0, E=0)
+2026-01-05 02:59:46.555 - Nettoyage - Trim.0 - Finished processing (I=0, O=0, R=3607, W=3607, U=0, E=0)
+2026-01-05 02:59:46.965 - Filtrage - Validité.0 - Finished processing (I=0, O=0, R=3607, W=3607, U=0, E=0)
+2026-01-05 02:59:46.967 - Sortie - Rejets.0 - Finished processing (I=0, O=117, R=116, W=116, U=0, E=0)
+2026-01-05 02:59:46.978 - Conversion - Typage.0 - Finished processing (I=0, O=0, R=3491, W=3491, U=0, E=0)
+2026-01-05 02:59:46.986 - Dédoublonnage.0 - Finished processing (I=0, O=0, R=3491, W=3491, U=0, E=0)
+2026-01-05 02:59:47.017 - Sortie - clean_consommation.0 - Finished processing (I=0, O=3492, R=3491, W=3491, U=0, E=0)
+2026-01-05 02:59:47.039 - job_etl_dm1_consommation - Starting entry [Load All Dimensions]
+2026-01-05 02:59:47.233 - Load All Dimensions - Using run configuration [Pentaho local]
+2026-01-05 02:59:47.241 - tr_load_dim_dm1 - Dispatching started for transformation [tr_load_dim_dm1]
+2026-01-05 02:59:47.311 - Lecture Clean Batiments.0 - Header row skipped in file 'C:\GreenCity_BI\staging\transformed\clean_batiments.csv'
+2026-01-05 02:59:47.341 - Lecture Clean Batiments.0 - Finished processing (I=51, O=0, R=0, W=50, U=0, E=0)
+2026-01-05 02:59:47.409 - Lecture Clean Régions.0 - Header row skipped in file 'C:\GreenCity_BI\staging\transformed\clean_regions.csv'
+2026-01-05 02:59:47.417 - Lecture Clean Compteurs.0 - Header row skipped in file 'C:\GreenCity_BI\staging\transformed\clean_compteurs.csv'
+2026-01-05 02:59:47.429 - Lecture Clean Types Energie.0 - Header row skipped in file 'C:\GreenCity_BI\staging\transformed\clean_types_energie.csv'
+2026-01-05 02:59:47.431 - Lecture Clean Régions.0 - Finished processing (I=9, O=0, R=0, W=8, U=0, E=0)
+2026-01-05 02:59:47.435 - Lecture Clean Compteurs.0 - Finished processing (I=151, O=0, R=0, W=150, U=0, E=0)
+2026-01-05 02:59:47.478 - Lecture Clean Types Energie.0 - Finished processing (I=4, O=0, R=0, W=3, U=0, E=0)
+2026-01-05 02:59:47.596 - Load Dim Region.0 - Finished processing (I=8, O=0, R=8, W=8, U=0, E=0)
+2026-01-05 02:59:47.599 - Load Dim Type Energie.0 - Finished processing (I=3, O=0, R=3, W=3, U=3, E=0)
+2026-01-05 02:59:47.865 - Load Dim Batiment.0 - Finished processing (I=50, O=0, R=50, W=50, U=0, E=0)
+2026-01-05 02:59:48.326 - Load Dim Compteur.0 - Finished processing (I=150, O=0, R=150, W=150, U=0, E=0)
+2026-01-05 02:59:48.337 - job_etl_dm1_consommation - Starting entry [Load Fact Conso]
+2026-01-05 02:59:48.492 - Load Fact Conso - Using run configuration [Pentaho local]
+2026-01-05 02:59:48.504 - tr_load_fact_consommation - Dispatching started for transformation [tr_load_fact_consommation]
+2026-01-05 02:59:48.649 - Lecture - Clean Temperatures.0 - Header row skipped in file 'C:\GreenCity_BI\staging\transformed\clean_temperatures.csv'
+2026-01-05 02:59:48.655 - Lecture - Clean Temperatures.0 - Finished processing (I=58, O=0, R=0, W=57, U=0, E=0)
+2026-01-05 02:59:48.732 - Lecture - Clean Consommation.0 - Header row skipped in file 'C:\GreenCity_BI\staging\transformed\clean_consommation.csv'
+2026-01-05 02:59:48.763 - Lecture - Clean Consommation.0 - Finished processing (I=3492, O=0, R=0, W=3491, U=0, E=0)
+2026-01-05 02:59:49.461 - Fusion - Info Météo.0 - Finished processing (I=0, O=0, R=3548, W=3491, U=0, E=0)
+2026-01-05 03:00:02.201 -  Lookup Region SK.0 - Finished processing (I=3491, O=0, R=3491, W=3491, U=0, E=0)
+2026-01-05 03:00:02.856 - Lookup Batiment SK.0 - Finished processing (I=3491, O=0, R=3491, W=3491, U=0, E=0)
+2026-01-05 03:00:03.045 - Lookup Compteur SK.0 - Finished processing (I=3491, O=0, R=3491, W=3491, U=0, E=0)
+2026-01-05 03:00:03.169 - Lookup Energie SK.0 - Finished processing (I=3491, O=0, R=3491, W=3491, U=0, E=0)
+2026-01-05 03:00:03.314 - Lookup Temps SK.0 - Finished processing (I=3491, O=0, R=3491, W=3491, U=0, E=0)
+2026-01-05 03:00:51.562 - Chargement - Fait Consommation.0 - Finished processing (I=3491, O=3491, R=3491, W=3491, U=0, E=0)
+2026-01-05 03:00:51.576 - job_etl_dm1_consommation - Starting entry [Success]
+2026-01-05 03:00:51.584 - job_etl_dm1_consommation - Finished job entry [Success] (result=[true])
+2026-01-05 03:00:51.585 - job_etl_dm1_consommation - Finished job entry [Load Fact Conso] (result=[true])
+2026-01-05 03:00:51.585 - job_etl_dm1_consommation - Finished job entry [Load All Dimensions] (result=[true])
+2026-01-05 03:00:51.588 - job_etl_dm1_consommation - Finished job entry [Clean Consommation] (result=[true])
+2026-01-05 03:00:51.588 - job_etl_dm1_consommation - Finished job entry [Clean Temperatures] (result=[true])
+2026-01-05 03:00:51.589 - job_etl_dm1_consommation - Finished job entry [Clean Types Energie] (result=[true])
+2026-01-05 03:00:51.589 - job_etl_dm1_consommation - Finished job entry [Clean Compteurs] (result=[true])
+2026-01-05 03:00:51.591 - job_etl_dm1_consommation - Finished job entry [Clean Batiments] (result=[true])
+2026-01-05 03:00:51.593 - job_etl_dm1_consommation - Finished job entry [Clean Regions] (result=[true])
+2026-01-05 03:00:51.596 - job_etl_dm1_consommation - Finished job entry [Extract JSON Conso] (result=[true])
+2026-01-05 03:00:51.599 - job_etl_dm1_consommation - Finished job entry [Extract Temperatures] (result=[true])
+2026-01-05 03:00:51.601 - job_etl_dm1_consommation - Finished job entry [Extract Types Energie] (result=[true])
+2026-01-05 03:00:51.604 - job_etl_dm1_consommation - Finished job entry [Extract Compteurs] (result=[true])
+2026-01-05 03:00:51.607 - job_etl_dm1_consommation - Finished job entry [Extract Batiments] (result=[true])
+2026-01-05 03:00:51.609 - job_etl_dm1_consommation - Finished job entry [Extract Regions] (result=[true])
+2026-01-05 03:00:51.610 - job_etl_dm1_consommation - Job execution finished
+2026-01-05 03:00:51.633 - Kitchen - Finished!
+2026-01-05 03:00:51.642 - Kitchen - Start=2026/01/05 02:59:37.330, Stop=2026/01/05 03:00:51.640
+2026-01-05 03:00:51.642 - Kitchen - Processing ended after 1 minutes and 14 seconds (74 seconds total).
