@@ -443,15 +443,19 @@
       <note>CHARGEMENT - DM3 Impact Environnemental
 =========================================
 1. Lire les donnees nettoyees (staging_env_clean.csv)
-2. Lookup dimensions (dim_temps, dim_region, dim_batiment)
-3. Generer cles surrogates (id_temps_fk, id_region_fk, id_batiment_fk)
-4. Insert/Update vers fait_environnement
-5. Compter lignes chargees (Memory Group By)
-6. Mettre a jour etl_control (statut=SUCCESS, nb_lignes)</note>
+2. Filtrer les enregistrements nouveaux (date_rapport > LAST_RUN_DATE)
+3. Lookup dimensions (dim_temps, dim_region, dim_batiment)
+4. Generer cles surrogates (id_temps_fk, id_region_fk, id_batiment_fk)
+5. Calculer ratio CO2/consommation (join avec DM1)
+6. Insert/Update vers fait_environnement
+
+NOTE: Cette transformation utilise un parametre LAST_RUN_DATE
+pour le chargement incremental. La valeur est stockee dans
+le fichier .last_run ou dans une table etl_control.</note>
       <xloc>50</xloc>
       <yloc>30</yloc>
-      <width>354</width>
-      <heigth>106</heigth>
+      <width>368</width>
+      <heigth>154</heigth>
       <fontname>Segoe UI</fontname>
       <fontsize>10</fontsize>
       <fontbold>N</fontbold>
@@ -538,6 +542,16 @@
   <order>
     <hop>
       <from>Read Clean Staging</from>
+      <to>Filter Incremental</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Filter Incremental</from>
+      <to>Filter New Records</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Filter New Records</from>
       <to>Lookup Region SK</to>
       <enabled>Y</enabled>
     </hop>
@@ -553,6 +567,11 @@
     </hop>
     <hop>
       <from>Lookup Temps SK</from>
+      <to>Add Load Timestamp</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Add Load Timestamp</from>
       <to>Select Final Fields</to>
       <enabled>Y</enabled>
     </hop>
@@ -561,21 +580,11 @@
       <to>Output to Data Mart</to>
       <enabled>Y</enabled>
     </hop>
-    <hop>
-      <from>Output to Data Mart</from>
-      <to>Count Rows Loaded</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Count Rows Loaded</from>
-      <to>Update ETL Control</to>
-      <enabled>Y</enabled>
-    </hop>
   </order>
   <step>
-    <name>Count Rows Loaded</name>
-    <type>MemoryGroupBy</type>
-    <description>Compte le nombre de lignes chargees </description>
+    <name>Add Load Timestamp</name>
+    <type>SystemInfo</type>
+    <description>Ajoute la date de chargement</description>
     <distribute>Y</distribute>
     <custom_distribution/>
     <copies>1</copies>
@@ -583,15 +592,10 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <give_back_row>N</give_back_row>
-    <group>
-      </group>
     <fields>
       <field>
-        <aggregate>nb_lignes_extraites</aggregate>
-        <subject>id_temps_fk</subject>
-        <type>COUNT_ALL</type>
-        <valuefield/>
+        <name>date_chargement</name>
+        <type>system date (variable)</type>
       </field>
     </fields>
     <attributes/>
@@ -603,8 +607,139 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>832</xloc>
-      <yloc>288</yloc>
+      <xloc>704</xloc>
+      <yloc>304</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Filter Incremental</name>
+    <type>ScriptValueMod</type>
+    <description>Filtre les enregistrements nouveaux basé sur date_rapport</description>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <compatible>N</compatible>
+    <optimizationLevel>9</optimizationLevel>
+    <jsScripts>
+      <jsScript>
+        <jsScript_type>0</jsScript_type>
+        <jsScript_name>Incremental Filter</jsScript_name>
+        <jsScript_script>
+// Recuperer le parametre LAST_RUN_DATE
+var last_run_str = getVariable("LAST_RUN_DATE", "1900-01-01");
+var last_run_date = null;
+
+// Parser la date avec plusieurs formats possibles
+if (last_run_str != null &amp;&amp; last_run_str != "") {
+  try {
+    // Format timestamp: "1900/01/01 00:00:00.000000000"
+    if (last_run_str.indexOf("/") > -1 &amp;&amp; last_run_str.indexOf(" ") > -1) {
+      var date_part = last_run_str.substring(0, last_run_str.indexOf(" "));
+      last_run_date = str2date(date_part, "yyyy/MM/dd");
+    } 
+    // Format date simple: "1900-01-01"
+    else if (last_run_str.indexOf("-") > -1) {
+      last_run_date = str2date(last_run_str, "yyyy-MM-dd");
+    }
+    else {
+      last_run_date = str2date("1900-01-01", "yyyy-MM-dd");
+    }
+  } catch(e) {
+    last_run_date = str2date("1900-01-01", "yyyy-MM-dd");
+  }
+} else {
+  last_run_date = str2date("1900-01-01", "yyyy-MM-dd");
+}
+
+// Comparer avec date_rapport
+var is_new_record = true;
+if (date_rapport != null &amp;&amp; last_run_date != null) {
+  is_new_record = date_rapport.getTime() > last_run_date.getTime();
+}
+
+// Calculer ratio CO2 (placeholder - sera enrichi avec join DM1)
+var ratio_co2_consommation = null;
+        </jsScript_script>
+      </jsScript>
+    </jsScripts>
+    <fields>
+      <field>
+        <name>is_new_record</name>
+        <rename>is_new_record</rename>
+        <type>Boolean</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <replace>N</replace>
+      </field>
+      <field>
+        <name>ratio_co2_consommation</name>
+        <rename>ratio_co2_consommation</rename>
+        <type>Number</type>
+        <length>10</length>
+        <precision>4</precision>
+        <replace>N</replace>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>224</xloc>
+      <yloc>304</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Filter New Records</name>
+    <type>FilterRows</type>
+    <description>Filtre pour ne garder que les nouveaux enregistrements</description>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <send_true_to>Lookup Region SK</send_true_to>
+    <send_false_to/>
+    <compare>
+      <condition>
+        <negated>N</negated>
+        <leftvalue>is_new_record</leftvalue>
+        <function>=</function>
+        <rightvalue/>
+        <value>
+          <name>constant</name>
+          <type>Boolean</type>
+          <text>Y</text>
+          <length>-1</length>
+          <precision>-1</precision>
+          <isnull>N</isnull>
+          <mask/>
+        </value>
+      </condition>
+    </compare>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>368</xloc>
+      <yloc>304</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -651,8 +786,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>336</xloc>
-      <yloc>352</yloc>
+      <xloc>528</xloc>
+      <yloc>368</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -699,8 +834,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>240</xloc>
-      <yloc>384</yloc>
+      <xloc>432</xloc>
+      <yloc>400</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -747,8 +882,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>448</xloc>
-      <yloc>384</yloc>
+      <xloc>640</xloc>
+      <yloc>400</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -798,6 +933,11 @@
         <update>Y</update>
       </value>
       <value>
+        <name>ratio_co2_consommation</name>
+        <rename>ratio_co2_consommation</rename>
+        <update>Y</update>
+      </value>
+      <value>
         <name>id_temps_fk</name>
         <rename>id_temps_fk</rename>
         <update>N</update>
@@ -822,8 +962,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>704</xloc>
-      <yloc>288</yloc>
+      <xloc>960</xloc>
+      <yloc>304</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -929,8 +1069,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>112</xloc>
-      <yloc>288</yloc>
+      <xloc>96</xloc>
+      <yloc>304</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -962,6 +1102,12 @@
       <field>
         <name>taux_recyclage</name>
       </field>
+      <field>
+        <name>ratio_co2_consommation</name>
+      </field>
+      <field>
+        <name>date_chargement</name>
+      </field>
       <select_unspecified>N</select_unspecified>
     </fields>
     <attributes/>
@@ -973,53 +1119,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>576</xloc>
-      <yloc>288</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Update ETL Control</name>
-    <type>ExecSQL</type>
-    <description>Met a jour etl_control avec nb_lignes et statut SUCCESS </description>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>greencity_dw</connection>
-    <execute_each_row>Y</execute_each_row>
-    <single_statement>N</single_statement>
-    <replace_variables>N</replace_variables>
-    <quoteString>N</quoteString>
-    <sql>UPDATE etl_control 
-SET derniere_extraction = NOW(), 
-    nb_lignes_extraites = ?,
-    statut = 'SUCCESS'
-WHERE nom_source = 'env_reports'</sql>
-    <set_params>N</set_params>
-    <insert_field/>
-    <update_field/>
-    <delete_field/>
-    <read_field/>
-    <arguments>
-      <argument>
-        <name>nb_lignes_extraites</name>
-      </argument>
-    </arguments>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>960</xloc>
-      <yloc>288</yloc>
+      <xloc>832</xloc>
+      <yloc>304</yloc>
       <draw>Y</draw>
     </GUI>
   </step>

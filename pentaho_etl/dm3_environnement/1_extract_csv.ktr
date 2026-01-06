@@ -2,9 +2,9 @@
 <transformation>
   <info>
     <name>1_extract_csv</name>
-    <description>DM3 Environnement - Etape 1: Extraction pure des fichiers CSV vers staging</description>
-    <extended_description>Copie brute des donnees sans transformation - tous les champs en String</extended_description>
-    <trans_version>1.0</trans_version>
+    <description>DM3 Environnement - Extraction avec Get Last Run integre </description>
+    <extended_description>Recupere la derniere date d extraction, puis extrait les fichiers CSV vers staging</extended_description>
+    <trans_version>2.0</trans_version>
     <trans_type>Normal</trans_type>
     <directory>/</directory>
     <parameters>
@@ -429,13 +429,13 @@
     <created_user>-</created_user>
     <created_date>2026/01/03 10:00:00.000</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2026/01/03 10:00:00.000</modified_date>
+    <modified_date>2026/01/03 15:00:00.000</modified_date>
     <key_for_session_key>H4sIAAAAAAAA/wMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
     <notepad>
-      <note>EXTRACTION PURE - DM3 Impact Environnemental</note>
+      <note>EXTRACTION - DM3 Impact Environnemental </note>
       <xloc>50</xloc>
       <yloc>30</yloc>
       <width>400</width>
@@ -456,7 +456,84 @@
       <drawshadow>N</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>greencity_dw</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>greencity_dw</database>
+    <port>3306</port>
+    <username>root</username>
+    <password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute>
+        <code>EXTRA_OPTION_MYSQL.defaultFetchSize</code>
+        <attribute>500</attribute>
+      </attribute>
+      <attribute>
+        <code>EXTRA_OPTION_MYSQL.useCursorFetch</code>
+        <attribute>true</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>MSSQL_DOUBLE_DECIMAL_SEPARATOR</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>PORT_NUMBER</code>
+        <attribute>3306</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>STREAM_RESULTS</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
+      </attribute>
+    </attributes>
+  </connection>
   <order>
+    <hop>
+      <from>Get Last Date</from>
+      <to>Set LAST_RUN_DATE Variable</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Set LAST_RUN_DATE Variable</from>
+      <to>Get Files from folder</to>
+      <enabled>Y</enabled>
+    </hop>
     <hop>
       <from>Get Files from folder</from>
       <to>Read CSV Files</to>
@@ -464,19 +541,24 @@
     </hop>
     <hop>
       <from>Read CSV Files</from>
-      <to>Add Extraction Timestamp</to>
+      <to>Filter Incremental</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Add Extraction Timestamp</from>
+      <from>Filter Incremental</from>
+      <to>Filter New Records</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Filter New Records</from>
       <to>Output to Staging Raw</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <step>
-    <name>Add Extraction Timestamp</name>
-    <type>SystemInfo</type>
-    <description>Ajoute un timestamp d extraction</description>
+    <name>Filter Incremental</name>
+    <type>ScriptValueMod</type>
+    <description>Filtre les enregistrements nouveaux base sur LAST_RUN_DATE</description>
     <distribute>Y</distribute>
     <custom_distribution/>
     <copies>1</copies>
@@ -484,10 +566,43 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
+    <compatible>N</compatible>
+    <optimizationLevel>9</optimizationLevel>
+    <jsScripts>
+      <jsScript>
+        <jsScript_type>0</jsScript_type>
+        <jsScript_name>Incremental Filter</jsScript_name>
+        <jsScript_script>
+// Recuperer le parametre LAST_RUN_DATE et convertir en String JavaScript
+var last_run_raw = getVariable("LAST_RUN_DATE", "1900-01-01");
+var last_run_str = "" + last_run_raw; // Force conversion en String JS
+
+// Extraire seulement la partie date (10 premiers caracteres)
+var last_run_date_str = "1900-01-01";
+if (last_run_str != null &amp;&amp; last_run_str.length >= 10) {
+  last_run_date_str = last_run_str.substring(0, 10);
+  // Normaliser le format (remplacer / par -)
+  last_run_date_str = last_run_date_str.split("/").join("-");
+}
+
+// date_rapport est en String format yyyy-MM-dd
+// Convertir en String JS pour comparaison
+var date_rapport_str = "" + date_rapport;
+var is_new_record = true;
+if (date_rapport_str != null &amp;&amp; date_rapport_str.length >= 10) {
+  is_new_record = date_rapport_str > last_run_date_str;
+}
+        </jsScript_script>
+      </jsScript>
+    </jsScripts>
     <fields>
       <field>
-        <name>date_extraction</name>
-        <type>system date (variable)</type>
+        <name>is_new_record</name>
+        <rename>is_new_record</rename>
+        <type>Boolean</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <replace>N</replace>
       </field>
     </fields>
     <attributes/>
@@ -499,8 +614,52 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>432</xloc>
-      <yloc>200</yloc>
+      <xloc>720</xloc>
+      <yloc>240</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Filter New Records</name>
+    <type>FilterRows</type>
+    <description>Ne garde que les nouveaux enregistrements (date_rapport > LAST_RUN_DATE)</description>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <send_true_to>Output to Staging Raw</send_true_to>
+    <send_false_to/>
+    <compare>
+      <condition>
+        <negated>N</negated>
+        <leftvalue>is_new_record</leftvalue>
+        <function>=</function>
+        <rightvalue/>
+        <value>
+          <name>constant</name>
+          <type>Boolean</type>
+          <text>Y</text>
+          <length>-1</length>
+          <precision>-1</precision>
+          <isnull>N</isnull>
+          <mask/>
+        </value>
+      </condition>
+    </compare>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>880</xloc>
+      <yloc>240</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -544,8 +703,47 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>112</xloc>
-      <yloc>200</yloc>
+      <xloc>400</xloc>
+      <yloc>240</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Get Last Date</name>
+    <type>TableInput</type>
+    <description>Recupere derniere_extraction depuis etl_control </description>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>greencity_dw</connection>
+    <sql>SELECT 
+    derniere_extraction,
+    nom_source,
+    statut
+FROM etl_control 
+WHERE nom_source = 'env_reports'</sql>
+    <limit>0</limit>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <lazy_conversion_active>N</lazy_conversion_active>
+    <cached_row_meta_active>N</cached_row_meta_active>
+    <row-meta/>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>64</xloc>
+      <yloc>240</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -651,18 +849,6 @@
         <length>-1</length>
         <precision>-1</precision>
       </field>
-      <field>
-        <name>date_extraction</name>
-        <type>Date</type>
-        <format>yyyy-MM-dd HH:mm:ss</format>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif/>
-        <trim_type>none</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
     </fields>
     <attributes/>
     <cluster_schema/>
@@ -673,8 +859,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>592</xloc>
-      <yloc>200</yloc>
+      <xloc>1040</xloc>
+      <yloc>240</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -769,8 +955,42 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>272</xloc>
-      <yloc>200</yloc>
+      <xloc>560</xloc>
+      <yloc>240</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Set LAST_RUN_DATE Variable</name>
+    <type>SetVariable</type>
+    <description>Definit la variable LAST_RUN_DATE pour tout le job </description>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <field>
+        <field_name>derniere_extraction</field_name>
+        <variable_name>LAST_RUN_DATE</variable_name>
+        <variable_type>ROOT_JOB</variable_type>
+        <default_value>1900-01-01</default_value>
+      </field>
+    </fields>
+    <use_formatting>Y</use_formatting>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>224</xloc>
+      <yloc>240</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
